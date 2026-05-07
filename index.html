@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Frameworks — BMAD · GSD · Superpowers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --bg2: #0d1117;
+    --bg3: #111820;
+    --bg4: #151d26;
+    --border: #1e2d3d;
+    --border2: #243447;
+    --text: #c9d1d9;
+    --text2: #8b949e;
+    --text3: #6e7681;
+    --bmad: #f97316;
+    --bmad-dim: rgba(249,115,22,0.12);
+    --bmad-mid: rgba(249,115,22,0.25);
+    --gsd: #22d3ee;
+    --gsd-dim: rgba(34,211,238,0.10);
+    --gsd-mid: rgba(34,211,238,0.22);
+    --sp: #a78bfa;
+    --sp-dim: rgba(167,139,250,0.10);
+    --sp-mid: rgba(167,139,250,0.22);
+    --green: #3fb950;
+    --yellow: #e3b341;
+    --red: #f85149;
+    --white: #f0f6fc;
+    --radius: 8px;
+    --radius-lg: 14px;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,12,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0;
+    padding: 0 24px;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    margin-right: 32px;
+    white-space: nowrap;
+  }
+
+  .nav-logo span { color: var(--gsd); }
+
+  .nav-tabs {
+    display: flex; gap: 0; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    padding: 0 18px;
+    height: 56px;
+    display: flex; align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: none; border-top: none; border-left: none; border-right: none;
+  }
+
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--white); border-bottom-color: var(--gsd); }
+  .nav-tab[data-page="bmad"].active { border-bottom-color: var(--bmad); }
+  .nav-tab[data-page="gsd"].active { border-bottom-color: var(--gsd); }
+  .nav-tab[data-page="superpowers"].active { border-bottom-color: var(--sp); }
+
+  /* ── PAGES ───────────────────────────────────────────── */
+  .page { display: none; padding-top: 56px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+
+  /* ── HERO ─────────────────────────────────────────────── */
+  .hero {
+    padding: 60px 24px 48px;
+    max-width: 1100px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gsd-dim);
+    border: 1px solid var(--gsd-mid);
+    color: var(--gsd);
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-tag::before { content: '◆'; font-size: 8px; }
+
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--white);
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  h1 em { font-style: normal; color: var(--gsd); }
+
+  .hero-sub {
+    font-size: 15px; color: var(--text2);
+    max-width: 620px; line-height: 1.8;
+    margin-bottom: 32px;
+  }
+
+  .stats-row {
+    display: flex; flex-wrap: wrap; gap: 24px;
+  }
+
+  .stat-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 8px 16px;
+  }
+
+  .stat-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  .stat-pill .name { font-weight: 700; font-size: 13px; color: var(--white); }
+  .stat-pill .val { font-size: 12px; color: var(--text2); }
+
+  /* ── FRAMEWORK CARDS (compare page) ─────────────────── */
+  .frameworks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 32px 0;
+  }
+
+  .fw-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .fw-card:hover { border-color: var(--border2); }
+
+  .fw-card.bmad { border-top: 3px solid var(--bmad); }
+  .fw-card.gsd  { border-top: 3px solid var(--gsd); }
+  .fw-card.sp   { border-top: 3px solid var(--sp); }
+
+  .fw-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 120px;
+    opacity: 0.04;
+    background: linear-gradient(180deg, currentColor 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .fw-card.bmad::before { color: var(--bmad); }
+  .fw-card.gsd::before  { color: var(--gsd); }
+  .fw-card.sp::before   { color: var(--sp); }
+
+  .fw-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 3px 10px;
+    border-radius: 20px; margin-bottom: 16px;
+  }
+
+  .fw-card.bmad .fw-badge { background: var(--bmad-dim); color: var(--bmad); border: 1px solid var(--bmad-mid); }
+  .fw-card.gsd .fw-badge  { background: var(--gsd-dim);  color: var(--gsd);  border: 1px solid var(--gsd-mid); }
+  .fw-card.sp .fw-badge   { background: var(--sp-dim);   color: var(--sp);   border: 1px solid var(--sp-mid); }
+
+  .fw-card h3 {
+    font-family: var(--sans); font-size: 20px; font-weight: 800;
+    color: var(--white); margin-bottom: 8px; letter-spacing: -0.3px;
+  }
+
+  .fw-card .tagline {
+    font-size: 12px; color: var(--text2); margin-bottom: 20px; line-height: 1.6;
+  }
+
+  .fw-stats {
+    display: flex; gap: 16px; margin-bottom: 20px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+
+  .fw-stat { text-align: center; }
+  .fw-stat .n { font-weight: 700; font-size: 16px; color: var(--white); font-family: var(--sans); }
+  .fw-stat .l { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .fw-card.bmad .fw-stat .n { color: var(--bmad); }
+  .fw-card.gsd .fw-stat .n  { color: var(--gsd); }
+  .fw-card.sp .fw-stat .n   { color: var(--sp); }
+
+  .fw-list { list-style: none; }
+  .fw-list li {
+    padding: 5px 0;
+    font-size: 12px; color: var(--text2);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+
+  .fw-list li::before { content: '→'; flex-shrink: 0; margin-top: 1px; }
+
+  .fw-card.bmad .fw-list li::before { color: var(--bmad); }
+  .fw-card.gsd .fw-list li::before  { color: var(--gsd); }
+  .fw-card.sp .fw-list li::before   { color: var(--sp); }
+
+  /* ── SECTION HEADERS ─────────────────────────────────── */
+  .section { margin-bottom: 48px; }
+
+  h2 {
+    font-family: var(--sans);
+    font-size: 22px; font-weight: 800;
+    color: var(--white); letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  h2 .accent { font-style: normal; }
+  h2 .bmad-a { color: var(--bmad); }
+  h2 .gsd-a  { color: var(--gsd); }
+  h2 .sp-a   { color: var(--sp); }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 16px; font-weight: 700;
+    color: var(--white); letter-spacing: -0.3px;
+    margin-bottom: 10px;
+  }
+
+  .section-lead { color: var(--text2); font-size: 13px; margin-bottom: 24px; line-height: 1.8; }
+
+  /* ── CODE BLOCKS ─────────────────────────────────────── */
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 12px 0;
+    position: relative;
+  }
+
+  pre .comment { color: var(--text3); }
+  pre .cmd     { color: var(--gsd); }
+  pre .key     { color: var(--bmad); }
+  pre .val     { color: var(--sp); }
+  pre .str     { color: var(--green); }
+  pre .tag     { color: var(--yellow); }
+
+  .pre-label {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 8px 16px;
+    font-size: 11px; color: var(--text3); font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .pre-label + pre {
+    border-radius: 0 0 var(--radius) var(--radius);
+    margin-top: 0;
+  }
+
+  .pre-label .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+
+  /* ── COMPARISON TABLE ───────────────────────────────── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 20px 0;
+  }
+
+  .compare-table th {
+    background: var(--bg3);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 700; font-size: 11px;
+    color: var(--text2); letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+  }
+
+  .compare-table td {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    vertical-align: top; color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .compare-table tr:hover td { background: var(--bg3); }
+  .compare-table td:first-child { color: var(--text); font-weight: 600; width: 180px; }
+
+  .chip {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 12px; font-size: 11px; font-weight: 700;
+    margin: 1px 2px;
+  }
+
+  .chip.bmad { background: var(--bmad-dim); color: var(--bmad); }
+  .chip.gsd  { background: var(--gsd-dim);  color: var(--gsd); }
+  .chip.sp   { background: var(--sp-dim);   color: var(--sp); }
+  .chip.ok   { background: rgba(63,185,80,0.12); color: var(--green); }
+  .chip.warn { background: rgba(227,179,65,0.12); color: var(--yellow); }
+  .chip.no   { background: rgba(248,81,73,0.12);  color: var(--red); }
+
+  /* ── STEP CARDS ─────────────────────────────────────── */
+  .steps { display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
+
+  .step {
+    display: flex; gap: 20px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .step:hover { border-color: var(--border2); }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; font-family: var(--sans);
+  }
+
+  .bmad-page .step-num { background: var(--bmad-dim); color: var(--bmad); border: 1px solid var(--bmad-mid); }
+  .gsd-page  .step-num { background: var(--gsd-dim);  color: var(--gsd);  border: 1px solid var(--gsd-mid); }
+  .sp-page   .step-num { background: var(--sp-dim);   color: var(--sp);   border: 1px solid var(--sp-mid); }
+  .compare-page .step-num { background: var(--bg4); color: var(--text); border: 1px solid var(--border); }
+
+  .step-body h4 {
+    font-family: var(--sans); font-size: 15px; font-weight: 700;
+    color: var(--white); margin-bottom: 6px;
+  }
+
+  .step-body p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  /* ── USE-CASE CARDS ─────────────────────────────────── */
+  .use-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 20px 0; }
+
+  .uc-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px;
+  }
+
+  .uc-icon { font-size: 24px; margin-bottom: 12px; }
+
+  .uc-card h4 {
+    font-family: var(--sans); font-size: 14px; font-weight: 700;
+    color: var(--white); margin-bottom: 8px;
+  }
+
+  .uc-card p { font-size: 12px; color: var(--text2); line-height: 1.7; }
+
+  /* ── TIPS & NOTES ───────────────────────────────────── */
+  .tip, .note, .warn-box {
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 13px; line-height: 1.7;
+    margin: 16px 0;
+    display: flex; gap: 12px;
+  }
+
+  .tip-icon, .note-icon, .warn-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+
+  .tip  { background: rgba(63,185,80,0.07);   border: 1px solid rgba(63,185,80,0.2);   color: #7ee787; }
+  .note { background: rgba(56,139,253,0.07);   border: 1px solid rgba(56,139,253,0.2);  color: #79c0ff; }
+  .warn-box { background: rgba(227,179,65,0.07); border: 1px solid rgba(227,179,65,0.2); color: var(--yellow); }
+
+  /* ── WORKFLOW DIAGRAM ───────────────────────────────── */
+  .flow {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0; margin: 20px 0; overflow-x: auto; padding-bottom: 8px;
+  }
+
+  .flow-step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-size: 12px; font-weight: 600; color: var(--text);
+    white-space: nowrap;
+  }
+
+  .flow-arrow { color: var(--text3); padding: 0 8px; font-size: 16px; flex-shrink: 0; }
+
+  .bmad-page .flow-step { border-color: var(--bmad-mid); }
+  .gsd-page  .flow-step { border-color: var(--gsd-mid); }
+  .sp-page   .flow-step { border-color: var(--sp-mid); }
+
+  /* ── AGENTS GRID ───────────────────────────────────── */
+  .agents-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px; margin: 16px 0;
+  }
+
+  .agent-chip {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 10px 14px;
+    font-size: 12px; color: var(--text2);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .agent-chip::before { content: '◆'; font-size: 8px; flex-shrink: 0; }
+  .bmad-page .agent-chip::before { color: var(--bmad); }
+  .sp-page .agent-chip::before { color: var(--sp); }
+
+  /* ── COMMANDS TABLE ─────────────────────────────────── */
+  .cmd-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 16px 0; }
+
+  .cmd-table th {
+    background: var(--bg3); padding: 10px 14px;
+    text-align: left; font-weight: 700; font-size: 10px;
+    color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px;
+    border: 1px solid var(--border);
+  }
+
+  .cmd-table td {
+    padding: 10px 14px; border: 1px solid var(--border);
+    vertical-align: top; color: var(--text2);
+  }
+
+  .cmd-table td:first-child {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .cmd-table tr:hover td { background: var(--bg3); }
+
+  .gsd-page  .cmd-table td:first-child { color: var(--gsd); }
+  .bmad-page .cmd-table td:first-child { color: var(--bmad); }
+  .sp-page   .cmd-table td:first-child { color: var(--sp); }
+
+  /* ── FOOTER ─────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+    font-size: 11px; color: var(--text3);
+  }
+
+  footer a { color: var(--gsd); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ── DIVIDER ─────────────────────────────────────────── */
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* ── PAGE TITLE BANNER ──────────────────────────────── */
+  .page-banner {
+    padding: 48px 24px 40px;
+    max-width: 1100px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-banner .back-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--text3); margin-bottom: 20px;
+    cursor: pointer; transition: color 0.2s;
+  }
+
+  .page-banner .back-badge:hover { color: var(--text); }
+
+  .page-banner h1 { font-size: clamp(24px, 4vw, 38px); margin-bottom: 12px; }
+
+  .page-banner .desc { font-size: 14px; color: var(--text2); line-height: 1.8; max-width: 600px; }
+
+  /* ── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .frameworks-grid { grid-template-columns: 1fr; }
+    .compare-table { font-size: 12px; }
+    .compare-table td:first-child { width: 120px; }
+    nav { padding: 0 12px; }
+    .nav-logo { margin-right: 16px; }
+    .container { padding: 24px 16px; }
+    .hero { padding: 40px 16px 32px; }
+  }
+
+  /* ── GLOW EFFECTS ───────────────────────────────────── */
+  .glow-bmad { text-shadow: 0 0 20px rgba(249,115,22,0.4); }
+  .glow-gsd  { text-shadow: 0 0 20px rgba(34,211,238,0.4); }
+  .glow-sp   { text-shadow: 0 0 20px rgba(167,139,250,0.4); }
+
+  /* ── INLINE BADGES ─────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 2px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  .badge.bmad { background: var(--bmad-dim); color: var(--bmad); border: 1px solid var(--bmad-mid); }
+  .badge.gsd  { background: var(--gsd-dim);  color: var(--gsd);  border: 1px solid var(--gsd-mid); }
+  .badge.sp   { background: var(--sp-dim);   color: var(--sp);   border: 1px solid var(--sp-mid); }
+
+  /* ── COMBO BOX ─────────────────────────────────────── */
+  .combo-callout {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 24px;
+    margin: 24px 0;
+  }
+
+  .combo-callout h3 { margin-bottom: 12px; }
+
+  /* ── TABLE WRAPPER ─────────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Claude<span>Code</span> Frameworks</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="compare">⚖️ Compare All</button>
+    <button class="nav-tab" data-page="bmad">🔶 BMAD Method</button>
+    <button class="nav-tab" data-page="gsd">🔵 Get Shit Done</button>
+    <button class="nav-tab" data-page="superpowers">🟣 Superpowers</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  PAGE 1 — COMPARE                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page active compare-page" id="page-compare">
+  <div class="hero">
+    <div class="hero-tag">Claude Code Frameworks Guide</div>
+    <h1>Three Frameworks.<br><em>One Mission</em>: Ship Faster.</h1>
+    <p class="hero-sub">BMAD, GSD, and Superpowers are the most powerful open-source frameworks for Claude Code. Each takes a different philosophy — here's everything you need to choose and combine them effectively.</p>
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div class="stat-dot" style="background:var(--bmad)"></div>
+        <span class="name">BMAD</span>
+        <span class="val">42.1k ★ · Agile AI Framework</span>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-dot" style="background:var(--gsd)"></div>
+        <span class="name">GSD</span>
+        <span class="val">58k ★ · Context Engineering</span>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-dot" style="background:var(--sp)"></div>
+        <span class="name">Superpowers</span>
+        <span class="val">176k ★ · Skills Framework</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- CARDS -->
+    <div class="section">
+      <h2>At a Glance</h2>
+      <p class="section-lead">Three very different philosophies for making Claude Code more powerful and reliable.</p>
+      <div class="frameworks-grid">
+
+        <div class="fw-card bmad">
+          <div class="fw-badge">BMAD Method</div>
+          <h3>Breakthrough Agile AI Development</h3>
+          <p class="tagline">Enterprise-grade AI-driven agile framework with 12+ specialized agent personas. Think PM, Architect, Scrum Master — all as Claude.</p>
+          <div class="fw-stats">
+            <div class="fw-stat"><div class="n">42.1k</div><div class="l">Stars</div></div>
+            <div class="fw-stat"><div class="n">34+</div><div class="l">Workflows</div></div>
+            <div class="fw-stat"><div class="n">12+</div><div class="l">Agents</div></div>
+            <div class="fw-stat"><div class="n">v6.2</div><div class="l">Version</div></div>
+          </div>
+          <ul class="fw-list">
+            <li>Scale-adaptive: tiny bug fix to enterprise architecture</li>
+            <li>Specialized agents: PM, Architect, Dev, UX, SM, QA &amp; more</li>
+            <li>Party Mode: multiple agents in one session</li>
+            <li>Official modules: Game Dev, Test Architect, Creative Suite</li>
+            <li>One-command install via npm</li>
+          </ul>
+        </div>
+
+        <div class="fw-card gsd">
+          <div class="fw-badge">Get Shit Done</div>
+          <h3>Spec-Driven Context Engineering</h3>
+          <p class="tagline">Solves "context rot" — the quality decay that kills long Claude sessions. Meta-prompting + multi-agent orchestration that keeps context fresh.</p>
+          <div class="fw-stats">
+            <div class="fw-stat"><div class="n">58k</div><div class="l">Stars</div></div>
+            <div class="fw-stat"><div class="n">86</div><div class="l">Skills</div></div>
+            <div class="fw-stat"><div class="n">33</div><div class="l">Subagents</div></div>
+            <div class="fw-stat"><div class="n">v1.38</div><div class="l">Version</div></div>
+          </div>
+          <ul class="fw-list">
+            <li>Parallel wave execution — independent plans run simultaneously</li>
+            <li>Fresh 200k context per plan — zero accumulated garbage</li>
+            <li>XML prompt formatting optimized for Claude</li>
+            <li>Multi-runtime: Claude Code, Cursor, Gemini, Copilot &amp; 10 more</li>
+            <li>Atomic git commits per task — surgical history</li>
+          </ul>
+        </div>
+
+        <div class="fw-card sp">
+          <div class="fw-badge">Superpowers</div>
+          <h3>Composable Skills Framework</h3>
+          <p class="tagline">The agent checks for relevant skills before any task. TDD, systematic debugging, subagent-driven development — all triggered automatically.</p>
+          <div class="fw-stats">
+            <div class="fw-stat"><div class="n">176k</div><div class="l">Stars</div></div>
+            <div class="fw-stat"><div class="n">15+</div><div class="l">Skills</div></div>
+            <div class="fw-stat"><div class="n">Plugin</div><div class="l">Install</div></div>
+            <div class="fw-stat"><div class="n">v5.0</div><div class="l">Version</div></div>
+          </div>
+          <ul class="fw-list">
+            <li>Automatic skill activation — no commands needed</li>
+            <li>Enforces RED-GREEN-REFACTOR TDD cycle</li>
+            <li>Git worktrees for isolated parallel development</li>
+            <li>Official Claude Plugin Marketplace listing</li>
+            <li>Subagent-driven development with two-stage review</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DETAILED COMPARISON TABLE -->
+    <div class="section">
+      <h2>Deep Comparison</h2>
+      <p class="section-lead">Side-by-side breakdown across every dimension that matters when choosing a framework.</p>
+      <div class="table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>🔶 BMAD Method</th>
+              <th>🔵 Get Shit Done</th>
+              <th>🟣 Superpowers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Core Philosophy</td>
+              <td>Agile ceremonies + AI agent personas as expert collaborators</td>
+              <td>Context engineering + spec-driven development to prevent context rot</td>
+              <td>Composable skills that auto-trigger — agent gains abilities automatically</td>
+            </tr>
+            <tr>
+              <td>Installation</td>
+              <td><code>npx bmad-method install</code> (Node.js 20+)</td>
+              <td><code>npx get-shit-done-cc@latest</code></td>
+              <td><code>/plugin install superpowers@claude-plugins-official</code></td>
+            </tr>
+            <tr>
+              <td>Learning Curve</td>
+              <td><span class="chip warn">Medium-High</span> — Agile concepts help</td>
+              <td><span class="chip warn">Medium</span> — few commands, deep system</td>
+              <td><span class="chip ok">Low</span> — automatic, zero new commands</td>
+            </tr>
+            <tr>
+              <td>Best For</td>
+              <td>Teams, complex products, enterprise-scale features</td>
+              <td>Solo devs, spec-first builders, reliability-critical projects</td>
+              <td>Any developer wanting methodology baked in automatically</td>
+            </tr>
+            <tr>
+              <td>Context Management</td>
+              <td>Scale-adaptive planning depth per project size</td>
+              <td>Fresh 200k context per sub-plan, wave execution</td>
+              <td>Git worktrees isolate development, subagents per task</td>
+            </tr>
+            <tr>
+              <td>Agent System</td>
+              <td>12+ named personas (PM, Arch, Dev, UX, SM, QA…)</td>
+              <td>33 subagents orchestrated by thin coordinators</td>
+              <td>Subagents per task with 2-stage code review</td>
+            </tr>
+            <tr>
+              <td>TDD Support</td>
+              <td><span class="chip warn">Encouraged</span> via workflows</td>
+              <td><span class="chip warn">Via plan verification</span></td>
+              <td><span class="chip ok">Enforced</span> RED-GREEN-REFACTOR skill</td>
+            </tr>
+            <tr>
+              <td>Git Integration</td>
+              <td>Supports branching strategies via modules</td>
+              <td>Atomic commits per task, milestone tagging, PR creation</td>
+              <td>Git worktrees per feature, merge/PR workflow skill</td>
+            </tr>
+            <tr>
+              <td>Multi-Runtime</td>
+              <td><span class="chip warn">Primarily Claude Code/Cursor</span></td>
+              <td><span class="chip ok">15+ runtimes</span> (Gemini, Copilot, Codex…)</td>
+              <td><span class="chip ok">Claude, Codex, Cursor, OpenCode, Gemini</span></td>
+            </tr>
+            <tr>
+              <td>Token Efficiency</td>
+              <td>Scale-adaptive: small tasks stay lean</td>
+              <td>Minimal mode: ~700 token overhead; full: ~12k</td>
+              <td>Skills loaded per-task, not always-on</td>
+            </tr>
+            <tr>
+              <td>Project Docs Created</td>
+              <td>PRD, Architecture, Stories, Epics, Sprint docs</td>
+              <td>PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md, PLANs</td>
+              <td>Design docs, implementation plans, SUMMARY files</td>
+            </tr>
+            <tr>
+              <td>Scope Validation</td>
+              <td>Agent review + story point estimation</td>
+              <td>Built-in schema drift, security anchoring, scope reduction detection</td>
+              <td>Two-stage review: spec compliance then code quality</td>
+            </tr>
+            <tr>
+              <td>Debugging Tools</td>
+              <td>Via QA agent workflows</td>
+              <td>/gsd-debug with persistent state</td>
+              <td>systematic-debugging skill (4-phase root cause)</td>
+            </tr>
+            <tr>
+              <td>Stars (GitHub)</td>
+              <td><strong>42.1k</strong></td>
+              <td><strong>58k</strong></td>
+              <td><strong>176k</strong> 🏆</td>
+            </tr>
+            <tr>
+              <td>Cost to Use</td>
+              <td><span class="chip ok">Free / MIT</span></td>
+              <td><span class="chip ok">Free / MIT</span></td>
+              <td><span class="chip ok">Free / MIT</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WHEN TO USE WHICH -->
+    <div class="section">
+      <h2>Decision Guide — Which Should You Choose?</h2>
+      <p class="section-lead">The right answer depends on your project type and workflow style.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">?</div>
+          <div class="step-body">
+            <h4>Choose <span class="badge bmad">BMAD</span> when…</h4>
+            <p>You're building a multi-phase product and want structured agile ceremonies with AI. You need specialized roles — a PM to write specs, an architect to design systems, a scrum master to manage sprints. Great for teams that already use agile and want to supercharge it with AI. Also excellent when you want <strong>Party Mode</strong> — multiple AI experts debating the right design.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">?</div>
+          <div class="step-body">
+            <h4>Choose <span class="badge gsd">GSD</span> when…</h4>
+            <p>You're a solo developer or small team who wants to describe an idea and have it reliably built — without context degradation killing quality mid-way. If you've ever had Claude "forget" what you were building or produce inconsistent code across a long session, GSD solves this with fresh context per execution wave. Best for <strong>spec-first, reliability-focused</strong> projects.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">?</div>
+          <div class="step-body">
+            <h4>Choose <span class="badge sp">Superpowers</span> when…</h4>
+            <p>You want your coding agent to simply <em>be better</em> without you learning new commands or workflows. Superpowers is the lowest-friction option — install it and your agent automatically practices TDD, does systematic debugging, creates git worktrees, and reviews its own code. The <strong>zero-ceremony</strong> choice that works for any project type.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">∑</div>
+          <div class="step-body">
+            <h4>Use All Three Together</h4>
+            <p>Power users combine them. <strong>BMAD</strong> for planning and architecture (PRD, tech spec, sprint planning) → <strong>GSD</strong> for reliable execution (wave-based implementation with fresh context) → <strong>Superpowers</strong> running always-on underneath (TDD, code review, debugging). Each layer handles a different concern without conflict.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EFFECTIVE USE WITH CLAUDE CODE -->
+    <div class="section">
+      <h2>How to Use <em class="gsd-a">Effectively</em> with Claude Code</h2>
+      <p class="section-lead">Regardless of which framework you choose, these principles maximize your Claude Code results.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Install in the Right Scope</h4>
+            <p>Install globally (<code>--global</code>) if you want the framework on all projects. Install locally (<code>--local</code>) for project-specific configs. BMAD and GSD both support per-project customization.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Run Claude Code with <code>--dangerously-skip-permissions</code></h4>
+            <p>All three frameworks work best when Claude isn't constantly asking you to approve bash commands like <code>git commit</code> or <code>ls</code>. Add granular permissions if you prefer control, but skip-permissions mode is the intended workflow for automation-heavy usage.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Front-Load Your Context</h4>
+            <p>All three frameworks work better when Claude has rich project context. Describe your stack, constraints, and goals at the start. BMAD's agents will ask clarifying questions. GSD's <code>/gsd-new-project</code> will extract them systematically. Superpowers will brainstorm with you. <em>Don't skip the design phase.</em></p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Let the Framework Drive — Don't Micromanage</h4>
+            <p>The biggest mistake is overriding the framework mid-flow with ad-hoc instructions. Trust the process: BMAD's agents have expertise; GSD's wave execution is designed for reliability; Superpowers skills auto-activate for a reason. Intervene at review checkpoints, not during execution.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Keep CLAUDE.md / Project Context Updated</h4>
+            <p>Claude Code reads <code>CLAUDE.md</code> at the start of every session. Put your architecture decisions, coding standards, and framework preferences there. BMAD, GSD, and Superpowers all benefit from a well-maintained project context file.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    Frameworks are open-source and MIT licensed. ·
+    <a href="https://github.com/bmad-code-org/BMAD-METHOD" target="_blank">BMAD</a> ·
+    <a href="https://github.com/gsd-build/get-shit-done" target="_blank">GSD</a> ·
+    <a href="https://github.com/obra/superpowers" target="_blank">Superpowers</a>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  PAGE 2 — BMAD                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page bmad-page" id="page-bmad">
+  <div class="page-banner">
+    <div class="hero-tag" style="background:var(--bmad-dim);border-color:var(--bmad-mid);color:var(--bmad)">◆ BMAD Method — Complete Guide</div>
+    <h1>Breakthrough Method for<br><em style="color:var(--bmad)" class="glow-bmad">Agile AI Development</em></h1>
+    <p class="desc">BMAD is a full agile framework powered by 12+ specialized AI agents. It adapts from a simple bug fix to an enterprise product — the same process, scaled to context. 42.1k stars. MIT. 100% free.</p>
+  </div>
+
+  <div class="container">
+
+    <!-- WHAT IS BMAD -->
+    <div class="section">
+      <h2>What is BMAD?</h2>
+      <p class="section-lead">BMAD (Breakthrough Method for Agile AI-Driven Development) turns Claude into a team of specialized experts. Rather than having a single AI that "does everything," you get distinct personas — each with domain expertise — who collaborate through a structured agile process.</p>
+
+      <div class="note">
+        <span class="note-icon">💡</span>
+        <span>"Traditional AI tools do the thinking for you, producing average results. BMad agents act as expert collaborators who guide you through a structured process to bring out your best thinking." — BMAD docs</span>
+      </div>
+
+      <h3 style="margin-top:28px">The 12+ Agent Personas</h3>
+      <div class="agents-grid">
+        <div class="agent-chip">Product Manager (PM)</div>
+        <div class="agent-chip">Solutions Architect</div>
+        <div class="agent-chip">Full-Stack Developer</div>
+        <div class="agent-chip">UX Expert</div>
+        <div class="agent-chip">Scrum Master</div>
+        <div class="agent-chip">QA Engineer</div>
+        <div class="agent-chip">Business Analyst</div>
+        <div class="agent-chip">Technical Writer</div>
+        <div class="agent-chip">DevOps Engineer</div>
+        <div class="agent-chip">Data Analyst</div>
+        <div class="agent-chip">Security Expert</div>
+        <div class="agent-chip">bmad-help (AI Guide)</div>
+      </div>
+    </div>
+
+    <!-- INSTALLATION -->
+    <div class="section">
+      <h2>Installation &amp; Setup</h2>
+      <p class="section-lead">One command installs everything. Node.js 20+ required.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Install BMAD into your project</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Terminal</div>
+            <pre><span class="comment"># Interactive install (recommended)</span>
+<span class="cmd">npx bmad-method install</span>
+
+<span class="comment"># Or non-interactive (for CI/CD)</span>
+<span class="cmd">npx bmad-method install \
+  --directory /path/to/project \
+  --modules bmm \
+  --tools claude-code \
+  --yes</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Open Claude Code in your project folder</h4>
+            <p>Navigate to your project directory and launch Claude Code. BMAD installs agents into <code>.claude/</code> and they'll be immediately available.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Terminal</div>
+            <pre><span class="cmd">cd my-project</span>
+<span class="cmd">claude</span>
+<span class="comment"># Or with auto-permissions for full automation:</span>
+<span class="cmd">claude --dangerously-skip-permissions</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Get oriented with bmad-help</h4>
+            <p>Whenever you're unsure what to do next, ask the built-in guidance system.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Claude Code prompt</div>
+            <pre><span class="cmd">bmad-help</span>
+<span class="comment"># Or ask contextually:</span>
+<span class="cmd">bmad-help I just finished the architecture, what do I do next?</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <span class="tip-icon">✅</span>
+        <span>Want bleeding-edge features? Use <code>npx bmad-method@next install</code> for prerelease builds. Expect higher churn.</span>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="section">
+      <h2>The BMAD Workflow</h2>
+      <p class="section-lead">BMAD follows a classic agile lifecycle, with each phase driven by a specialized agent.</p>
+
+      <div class="flow">
+        <div class="flow-step">📋 Ideation</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">📄 PRD</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🏗️ Architecture</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">📝 Epics/Stories</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🏃 Sprint</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">💻 Implementation</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🧪 QA</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🚀 Deploy</div>
+      </div>
+
+      <div class="steps" style="margin-top:20px">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Invoke the PM Agent — Create Your PRD</h4>
+            <p>Start a new project by activating the Product Manager agent. It asks targeted questions about your goals, users, constraints, and success metrics, then produces a structured Product Requirements Document.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Claude Code</div>
+            <pre><span class="cmd">@pm Create a PRD for a SaaS task management app
+    targeting small dev teams. Key features:
+    kanban board, GitHub integration, time tracking.</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Invoke the Architect Agent — Design the System</h4>
+            <p>Once your PRD is approved, the Solutions Architect reads it and designs the technical system: tech stack, data models, API design, infrastructure decisions, and ADRs (Architecture Decision Records).</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Claude Code</div>
+            <pre><span class="cmd">@architect Review the PRD and create an architecture
+    document. We're using Node.js + PostgreSQL + React.
+    Design for 10k concurrent users.</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Invoke the Scrum Master — Break Into Stories</h4>
+            <p>The Scrum Master decomposes your architecture into epics, user stories, and sprint plans. Stories are estimated, prioritized, and ready for development.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Claude Code</div>
+            <pre><span class="cmd">@sm Create a 2-week sprint from the architecture doc.
+    Prioritize: user auth, kanban board MVP, then GitHub
+    integration. Keep stories under 5 story points each.</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Invoke the Developer Agent — Implement Stories</h4>
+            <p>Hand stories to the Developer agent. It reads the architecture doc, understands the codebase, and implements the feature with tests, following your established patterns.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Claude Code</div>
+            <pre><span class="cmd">@dev Implement story US-001: User Authentication.
+    Use JWT, bcrypt for passwords, PostgreSQL via Prisma.
+    Follow the architecture doc patterns.</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Party Mode — Multi-Agent Collaboration</h4>
+            <p>Bring multiple agents into one session to debate design decisions. Get the Architect and PM to argue tradeoffs before you commit to an approach.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--bmad)"></div> Claude Code</div>
+            <pre><span class="cmd">@architect @pm Debate: should we use REST or GraphQL
+    for our API? Consider our team size (3 devs),
+    mobile clients, and 18-month timeline.</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODULES -->
+    <div class="section">
+      <h2>Official BMAD Modules</h2>
+      <p class="section-lead">Extend BMAD with specialized domain modules.</p>
+      <div class="table-wrap">
+        <table class="cmd-table">
+          <thead><tr><th>Module</th><th>Purpose</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td>BMM (Core)</td><td>Base agile framework, 34+ workflows</td><td>All projects</td></tr>
+            <tr><td>BMad Builder</td><td>Create custom BMAD agents and workflows</td><td>Teams with unique processes</td></tr>
+            <tr><td>Test Architect (TEA)</td><td>Risk-based test strategy and automation</td><td>Quality-critical systems</td></tr>
+            <tr><td>Game Dev Studio</td><td>Unity, Unreal, Godot workflows</td><td>Game development</td></tr>
+            <tr><td>Creative Intelligence</td><td>Innovation, brainstorming, design thinking</td><td>Product ideation</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USE CASES -->
+    <div class="section">
+      <h2>Real Use Cases &amp; Examples</h2>
+      <div class="use-cases">
+        <div class="uc-card">
+          <div class="uc-icon">🏢</div>
+          <h4>Enterprise SaaS Product</h4>
+          <p>Use PM for PRD, Architect for system design (microservices, event-driven), SM for 4 sprints, Dev team for implementation. Party Mode to review architecture with all agents simultaneously.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🎮</div>
+          <h4>Game Development</h4>
+          <p>Install the Game Dev Studio module for Unity/Unreal. BMAD handles game design docs, level design specs, and Unity C# implementation — all with game-domain expertise.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🐛</div>
+          <h4>Debugging Complex Issues</h4>
+          <p>Invoke the QA agent to triage, the Dev agent to fix, and the Architect agent to prevent recurrence. Each brings specialized thinking to the same problem.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🔄</div>
+          <h4>API Redesign</h4>
+          <p>PM scopes what changes, Architect designs the new API (REST→GraphQL migration), Dev creates the migration plan with backward compatibility strategy, QA designs integration tests.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCED TIPS -->
+    <div class="section">
+      <h2>Advanced Tips for BMAD</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Put Architecture Decisions in CLAUDE.md</h4>
+            <p>Once your architecture doc is complete, summarize key decisions in <code>CLAUDE.md</code>. Every subsequent BMAD agent session will start with this context, keeping all agents aligned on your tech choices.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Use bmad-help Proactively</h4>
+            <p>Don't guess which agent to use. <code>bmad-help</code> understands your current project state and tells you exactly what's next. It reads your existing docs and recommends the right workflow.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Scale Depth to Project Size</h4>
+            <p>For a bug fix, you don't need a full PRD. Ask the Dev agent directly. BMAD automatically adjusts planning depth — a 2-hour fix doesn't need sprint ceremonies. Only invoke the full workflow for multi-week features.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="combo-callout">
+        <h3>🔗 Combine BMAD with GSD</h3>
+        <p style="color:var(--text2);font-size:13px;line-height:1.8">Use BMAD for the <strong style="color:var(--bmad)">planning phase</strong> (PRD → Architecture → Sprint Stories) and GSD for <strong style="color:var(--gsd)">execution</strong> (wave-based implementation with fresh context per plan). This gives you BMAD's structured planning with GSD's context rot prevention during implementation. Best of both worlds.</p>
+        <div class="pre-label" style="margin-top:16px"><div class="dot" style="background:var(--bmad)"></div> Workflow</div>
+        <pre><span class="comment"># Phase 1: BMAD Planning</span>
+<span class="key">@pm</span>     → PRD
+<span class="key">@architect</span> → Architecture doc
+<span class="key">@sm</span>     → Sprint stories
+
+<span class="comment"># Phase 2: GSD Execution</span>
+<span class="cmd">/gsd-new-project</span>  <span class="comment"># Import BMAD stories as requirements</span>
+<span class="cmd">/gsd-plan-phase 1</span>  <span class="comment"># Research + plan from stories</span>
+<span class="cmd">/gsd-execute-phase 1</span> <span class="comment"># Wave execution, fresh context</span></pre>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    <a href="https://github.com/bmad-code-org/BMAD-METHOD" target="_blank">GitHub</a> ·
+    <a href="https://docs.bmad-method.org" target="_blank">docs.bmad-method.org</a> ·
+    MIT License · Free forever
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  PAGE 3 — GSD                                           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page gsd-page" id="page-gsd">
+  <div class="page-banner">
+    <div class="hero-tag" style="background:var(--gsd-dim);border-color:var(--gsd-mid);color:var(--gsd)">◆ Get Shit Done — Complete Guide</div>
+    <h1>Context Engineering for<br><em style="color:var(--gsd)" class="glow-gsd">Reliable AI Development</em></h1>
+    <p class="desc">GSD fixes "context rot" — the quality degradation that happens as Claude fills its context window. 58k stars. 86 skills. 33 subagents. Multi-agent wave execution. The most battle-tested spec-driven system for Claude Code.</p>
+  </div>
+
+  <div class="container">
+
+    <!-- PROBLEM GSD SOLVES -->
+    <div class="section">
+      <h2>The Problem GSD Solves</h2>
+      <p class="section-lead">Without GSD, long Claude Code sessions produce increasingly inconsistent results. Context fills up, early instructions get compressed, and Claude starts making decisions you didn't ask for.</p>
+
+      <div class="warn-box">
+        <span class="warn-icon">⚠️</span>
+        <span><strong>Context Rot:</strong> As your session grows, Claude's context window fills. Early instructions get deprioritized, quality degrades, and you get "I'll be more concise now" — a symptom that the model is running out of reliable working memory.</span>
+      </div>
+
+      <div class="note">
+        <span class="note-icon">✨</span>
+        <span><strong>GSD's fix:</strong> Each execution plan runs in a <strong>fresh 200k context window</strong>. Your main session stays lean (30-40% usage). Sub-agents do the heavy lifting with pristine context — no accumulated garbage.</span>
+      </div>
+    </div>
+
+    <!-- INSTALLATION -->
+    <div class="section">
+      <h2>Installation</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Install GSD</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Terminal</div>
+            <pre><span class="comment"># Interactive install — picks runtime and location</span>
+<span class="cmd">npx get-shit-done-cc@latest</span>
+
+<span class="comment"># Claude Code globally (all projects)</span>
+<span class="cmd">npx get-shit-done-cc --claude --global</span>
+
+<span class="comment"># Claude Code locally (current project only)</span>
+<span class="cmd">npx get-shit-done-cc --claude --local</span>
+
+<span class="comment"># Token-constrained? Use minimal mode (94% less overhead)</span>
+<span class="cmd">npx get-shit-done-cc --claude --global --minimal</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Run Claude Code with skip-permissions</h4>
+            <p>GSD is designed for frictionless automation. Don't approve 50 bash commands per session.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Terminal</div>
+            <pre><span class="cmd">claude --dangerously-skip-permissions</span>
+
+<span class="comment"># Or set granular permissions in .claude/settings.json:</span>
+<span class="tag">"permissions"</span>: {
+  <span class="tag">"allow"</span>: [<span class="str">"Bash(git commit:*)"</span>, <span class="str">"Bash(git add:*)"</span>, <span class="str">"Bash(ls:*)"</span>]
+}</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Verify installation</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code prompt</div>
+            <pre><span class="cmd">/gsd-help</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE 6-STEP WORKFLOW -->
+    <div class="section">
+      <h2>The Core Workflow</h2>
+      <p class="section-lead">GSD follows a structured 6-step loop: Discuss → Plan → Execute → Verify → Ship → Next Milestone.</p>
+
+      <div class="flow">
+        <div class="flow-step">🗣️ Discuss</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">📐 Plan</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">⚡ Execute</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">✅ Verify</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🚢 Ship</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🔁 Next</div>
+      </div>
+
+      <div class="steps" style="margin-top:20px">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Initialize Project</h4>
+            <p>Describe your idea. GSD asks until it understands completely — goals, tech preferences, edge cases, constraints. It spawns parallel research agents, scopes v1 vs v2, and creates a roadmap you approve.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-new-project</span>
+<span class="comment"># Existing codebase? Map it first:</span>
+<span class="cmd">/gsd-map-codebase</span>
+<span class="cmd">/gsd-new-project</span></pre>
+            <p style="font-size:12px;color:var(--text2);margin-top:10px"><strong>Creates:</strong> PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md, .planning/research/</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Discuss Phase — Shape the Implementation</h4>
+            <p>Before any research or code, GSD captures <em>your vision</em>. It identifies gray areas based on what's being built (UI? Ask about layout and interactions. API? Ask about response format and error handling). The output — CONTEXT.md — guides everything that follows.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-discuss-phase 1</span>
+<span class="comment"># Skip questions, use codebase analysis instead:</span>
+<span class="cmd">/gsd-discuss-phase 1 --analyze</span>
+<span class="comment"># Auto-chain straight into plan+execute:</span>
+<span class="cmd">/gsd-discuss-phase 1 --chain</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Plan Phase — Research, Plan, Verify</h4>
+            <p>GSD researches how to implement the phase (guided by your CONTEXT.md), creates 2-3 atomic XML-structured plans, then verifies they achieve the phase goals. If not, it loops until they pass.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-plan-phase 1</span></pre>
+            <p style="font-size:12px;color:var(--text2);margin-top:10px"><strong>Creates:</strong> 1-RESEARCH.md, 1-1-PLAN.md, 1-2-PLAN.md, …</p>
+            <div class="pre-label" style="margin-top:12px"><div class="dot" style="background:var(--gsd)"></div> Example XML plan structure</div>
+            <pre><span class="tag">&lt;task type="auto"&gt;</span>
+  <span class="tag">&lt;name&gt;</span><span class="str">Create login endpoint</span><span class="tag">&lt;/name&gt;</span>
+  <span class="tag">&lt;files&gt;</span><span class="str">src/app/api/auth/login/route.ts</span><span class="tag">&lt;/files&gt;</span>
+  <span class="tag">&lt;action&gt;</span>
+    Use jose for JWT (not jsonwebtoken - CommonJS issues).
+    Validate credentials against users table.
+    Return httpOnly cookie on success.
+  <span class="tag">&lt;/action&gt;</span>
+  <span class="tag">&lt;verify&gt;</span>curl -X POST localhost:3000/api/auth/login returns 200<span class="tag">&lt;/verify&gt;</span>
+  <span class="tag">&lt;done&gt;</span>Valid credentials return cookie, invalid return 401<span class="tag">&lt;/done&gt;</span>
+<span class="tag">&lt;/task&gt;</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>Execute Phase — Wave-Based Parallel Execution</h4>
+            <p>Plans group into waves by dependency. Independent plans run in parallel, each with a fresh 200k context. Your main session stays at 30-40%. Every task gets an atomic git commit.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-execute-phase 1</span></pre>
+            <div class="pre-label" style="margin-top:12px"><div class="dot" style="background:var(--gsd)"></div> Wave execution diagram</div>
+            <pre><span class="comment">WAVE 1 (parallel)        WAVE 2 (parallel)     WAVE 3</span>
+<span class="key">Plan 01</span>  <span class="key">Plan 02</span>  →  <span class="key">Plan 03</span>  <span class="key">Plan 04</span>  →  <span class="key">Plan 05</span>
+User DB  Product DB    Orders API  Cart API    Checkout UI
+                       ↑ needs 01  ↑ needs 02  ↑ needs 03+04</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Verify Work — Human Acceptance Testing</h4>
+            <p>GSD walks you through each deliverable: "Can you log in with email?" You confirm or describe what's wrong. Failed items trigger automatic debug agents, which create verified fix plans ready for re-execution.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-verify-work 1</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Ship and Repeat</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-ship 1</span>           <span class="comment"># Create PR with auto-generated body</span>
+<span class="cmd">/gsd-complete-milestone</span> <span class="comment"># Archive, tag release</span>
+<span class="cmd">/gsd-new-milestone</span>      <span class="comment"># Start next version</span>
+<span class="comment"># Or let GSD decide the next step automatically:</span>
+<span class="cmd">/gsd-next</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEY COMMANDS -->
+    <div class="section">
+      <h2>Key Commands Reference</h2>
+      <div class="table-wrap">
+        <table class="cmd-table">
+          <thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+          <tbody>
+            <tr><td>/gsd-new-project</td><td>Full initialization: questions → research → requirements → roadmap</td></tr>
+            <tr><td>/gsd-map-codebase</td><td>Analyze existing codebase before starting — spawns parallel agents</td></tr>
+            <tr><td>/gsd-discuss-phase N</td><td>Shape implementation decisions before planning</td></tr>
+            <tr><td>/gsd-plan-phase N</td><td>Research + plan + verify for a phase</td></tr>
+            <tr><td>/gsd-execute-phase N</td><td>Wave execution — parallel plans with fresh context per plan</td></tr>
+            <tr><td>/gsd-verify-work N</td><td>Human acceptance testing with auto-debug on failures</td></tr>
+            <tr><td>/gsd-ship N</td><td>Create PR from verified work with auto-generated body</td></tr>
+            <tr><td>/gsd-quick</td><td>Ad-hoc tasks without full planning (use --full for all phases)</td></tr>
+            <tr><td>/gsd-debug</td><td>Systematic debugging with persistent state</td></tr>
+            <tr><td>/gsd-next</td><td>Auto-detect project state and run the next logical step</td></tr>
+            <tr><td>/gsd-spike</td><td>Run 2-5 throwaway experiments before committing to an approach</td></tr>
+            <tr><td>/gsd-sketch</td><td>Generate 2-3 interactive HTML mockup variants</td></tr>
+            <tr><td>/gsd-settings</td><td>Configure model profiles (quality/balanced/budget) and workflow toggles</td></tr>
+            <tr><td>/gsd-health</td><td>Validate .planning/ integrity, auto-repair issues</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USE CASES -->
+    <div class="section">
+      <h2>Real Use Cases &amp; Examples</h2>
+      <div class="use-cases">
+        <div class="uc-card">
+          <div class="uc-icon">🛒</div>
+          <h4>E-commerce Platform</h4>
+          <p>Phase 1: User + Product models (Wave 1: parallel). Phase 2: Orders + Cart APIs (Wave 2: parallel, depends on Phase 1). Phase 3: Checkout UI (Wave 3: sequential). Each wave fresh context, atomic commits.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🔌</div>
+          <h4>API Integration Sprint</h4>
+          <p>Use <code>/gsd-spike</code> to test 3 different API libraries. Review spike artifacts, choose the best. Run <code>/gsd-quick --research</code> for the integration. Done in one session without context rot.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🔄</div>
+          <h4>Legacy Codebase Modernization</h4>
+          <p>Run <code>/gsd-map-codebase</code> to index the existing system. GSD understands your architecture before planning any changes. Questions focus on "what you're adding," not re-discovering the stack.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🎨</div>
+          <h4>UI Feature with Design First</h4>
+          <p>Use <code>/gsd-sketch</code> to generate 3 HTML mockup variants. Pick one. Run <code>/gsd-ui-phase</code> to create UI-SPEC.md. Execute with fresh context per component — no design drift.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCED TIPS -->
+    <div class="section">
+      <h2>Advanced GSD Tips</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Choose the Right Model Profile</h4>
+            <p>GSD lets you set which Claude model does planning vs execution vs verification. Use <code>balanced</code> (default: Opus for planning, Sonnet for execution) for best results. Use <code>budget</code> for cost-sensitive projects.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-set-profile quality</span>  <span class="comment"># Opus everywhere</span>
+<span class="cmd">/gsd-set-profile balanced</span> <span class="comment"># Default: Opus plan, Sonnet execute</span>
+<span class="cmd">/gsd-set-profile budget</span>   <span class="comment"># Sonnet plan, Haiku verify</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Use Workstreams for Parallel Features</h4>
+            <p>Building two features at once? GSD workstreams give each feature its own namespaced planning context, preventing interference.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-workstreams create auth-feature</span>
+<span class="cmd">/gsd-workstreams create dashboard-feature</span>
+<span class="cmd">/gsd-workstreams switch auth-feature</span>
+<span class="comment"># Work on auth...</span>
+<span class="cmd">/gsd-workstreams switch dashboard-feature</span>
+<span class="comment"># Work on dashboard...</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Plan Vertical Slices, Not Horizontal Layers</h4>
+            <p>GSD's wave execution parallelizes better with vertical slices (User feature end-to-end) than horizontal layers (all models → all APIs → all UI). Each slice can run as an independent plan in the same wave.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Pause and Resume Across Sessions</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--gsd)"></div> Claude Code</div>
+            <pre><span class="cmd">/gsd-pause-work</span>    <span class="comment"># Creates HANDOFF.json with full state</span>
+<span class="comment"># Next day / new session:</span>
+<span class="cmd">/gsd-resume-work</span>   <span class="comment"># Restores exactly where you left off</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    <a href="https://github.com/gsd-build/get-shit-done" target="_blank">GitHub</a> ·
+    <a href="https://github.com/gsd-build/get-shit-done/blob/main/docs/USER-GUIDE.md" target="_blank">User Guide</a> ·
+    MIT License · Trusted by engineers at Amazon, Google, Shopify
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  PAGE 4 — SUPERPOWERS                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page sp-page" id="page-superpowers">
+  <div class="page-banner">
+    <div class="hero-tag" style="background:var(--sp-dim);border-color:var(--sp-mid);color:var(--sp)">◆ Superpowers — Complete Guide</div>
+    <h1>The Agentic Skills Framework<br><em style="color:var(--sp)" class="glow-sp">That Works Automatically</em></h1>
+    <p class="desc">Superpowers gives your coding agent composable skills that trigger automatically. TDD. Systematic debugging. Code review. Git worktrees. No new commands to learn — your agent just becomes better. 176k stars. The most starred AI coding framework on GitHub.</p>
+  </div>
+
+  <div class="container">
+
+    <!-- WHAT IS SUPERPOWERS -->
+    <div class="section">
+      <h2>What is Superpowers?</h2>
+      <p class="section-lead">Superpowers is a collection of skills that Claude Code reads and follows automatically. Unlike BMAD (invoke specific agents) or GSD (run slash commands), Superpowers skills activate themselves — the agent checks for relevant skills before any task and applies them without you asking.</p>
+
+      <div class="note">
+        <span class="note-icon">⚡</span>
+        <span>"As soon as the agent sees you're building something, it doesn't jump into trying to write code. Instead, it steps back and asks what you're really trying to do." — Superpowers README</span>
+      </div>
+
+      <h3 style="margin-top:28px">The Skills Library</h3>
+      <div class="agents-grid">
+        <div class="agent-chip">brainstorming</div>
+        <div class="agent-chip">writing-plans</div>
+        <div class="agent-chip">executing-plans</div>
+        <div class="agent-chip">test-driven-development</div>
+        <div class="agent-chip">systematic-debugging</div>
+        <div class="agent-chip">verification-before-completion</div>
+        <div class="agent-chip">subagent-driven-development</div>
+        <div class="agent-chip">requesting-code-review</div>
+        <div class="agent-chip">receiving-code-review</div>
+        <div class="agent-chip">using-git-worktrees</div>
+        <div class="agent-chip">finishing-a-development-branch</div>
+        <div class="agent-chip">dispatching-parallel-agents</div>
+        <div class="agent-chip">writing-skills</div>
+        <div class="agent-chip">using-superpowers</div>
+      </div>
+    </div>
+
+    <!-- INSTALLATION -->
+    <div class="section">
+      <h2>Installation</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Install from Claude Plugin Marketplace (Easiest)</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> Claude Code</div>
+            <pre><span class="comment"># Official Anthropic marketplace (recommended):</span>
+<span class="cmd">/plugin install superpowers@claude-plugins-official</span>
+
+<span class="comment"># Or via Superpowers own marketplace:</span>
+<span class="cmd">/plugin marketplace add obra/superpowers-marketplace</span>
+<span class="cmd">/plugin install superpowers@superpowers-marketplace</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Install for Other Runtimes</h4>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> Terminal</div>
+            <pre><span class="comment"># Cursor (via Plugin Marketplace):</span>
+<span class="cmd">/add-plugin superpowers</span>
+
+<span class="comment"># Gemini CLI:</span>
+<span class="cmd">gemini extensions install https://github.com/obra/superpowers</span>
+
+<span class="comment"># GitHub Copilot:</span>
+<span class="cmd">copilot plugin marketplace add obra/superpowers-marketplace</span>
+<span class="cmd">copilot plugin install superpowers@superpowers-marketplace</span>
+
+<span class="comment"># OpenCode:</span>
+<span class="str">"Fetch and follow instructions from
+ https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md"</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>That's it — No configuration needed</h4>
+            <p>Once installed, your coding agent has superpowers. Start working on your project normally — the skills activate automatically based on what you're doing.</p>
+            <div class="tip" style="margin-top:12px">
+              <span class="tip-icon">✅</span>
+              <span>Superpowers updates are often <strong>automatic</strong> — the plugin system handles it. Check your plugin manager periodically.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE WORKFLOW -->
+    <div class="section">
+      <h2>The Superpowers Workflow</h2>
+      <p class="section-lead">Skills activate in sequence as you work. You don't invoke them — they recognize when they're needed and apply themselves.</p>
+
+      <div class="flow">
+        <div class="flow-step">🧠 Brainstorm</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🌿 Worktree</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">📋 Plan</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🤖 Subagents</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🔴🟢 TDD</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">👁️ Review</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🏁 Finish</div>
+      </div>
+
+      <div class="steps" style="margin-top:20px">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Brainstorming Skill — Activates Before Any Code</h4>
+            <p>When you describe what you want to build, the brainstorming skill fires first. It asks Socratic questions to refine your idea, explores alternatives, and presents the design in sections for your validation. Saves a design document. Only then does it proceed to code.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> Example interaction</div>
+            <pre><span class="str">You:</span> "Build me a rate limiting middleware for my Express API"
+
+<span class="str">Superpowers:</span> [brainstorming skill activates]
+  → What's your target: per-user, per-IP, or per-API-key?
+  → Do you need distributed rate limiting (Redis) or in-memory is fine?
+  → What should happen when the limit is exceeded — 429 or queue?
+  → Should limits be configurable per-route or global?
+  
+  [After your answers, presents design in sections for approval]
+  [Saves DESIGN.md before writing any code]</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Git Worktrees Skill — Isolated Development</h4>
+            <p>After design approval, the agent creates a git worktree on a new branch. This isolates your feature from main, runs project setup, and verifies you have a clean test baseline before touching anything.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> What happens automatically</div>
+            <pre><span class="comment"># Agent automatically runs:</span>
+<span class="cmd">git worktree add ../my-app-rate-limiting feature/rate-limiting</span>
+<span class="cmd">cd ../my-app-rate-limiting</span>
+<span class="cmd">npm install</span>
+<span class="cmd">npm test</span>  <span class="comment"># Verify clean baseline — all tests should pass</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Writing Plans Skill — Atomic Implementation Tasks</h4>
+            <p>The agent breaks work into 2-5 minute tasks. Each task has exact file paths, complete expected code, and verification steps. Plans are detailed enough for "an enthusiastic junior engineer with poor judgement" to follow — nothing ambiguous.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> Example plan task</div>
+            <pre>Task 1: Create rate limiter class
+  File: src/middleware/rateLimiter.ts
+  Action: Create RateLimiter class with Map storage,
+          increment(), isLimited(), and cleanup() methods.
+  Verify: Unit test passes — 5 requests succeed, 6th blocked
+  Time: ~3 minutes</pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h4>TDD Skill — Enforced RED-GREEN-REFACTOR</h4>
+            <p>The TDD skill is the most rigorous in Superpowers. It enforces the cycle strictly: write a <span style="color:var(--red)">failing test</span>, watch it fail (RED), write minimal code to pass (GREEN), refactor, commit. <strong>Code written before tests gets deleted.</strong></p>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> TDD cycle enforced automatically</div>
+            <pre><span class="comment"># 1. Write failing test FIRST:</span>
+<span class="key">test</span>(<span class="str">'blocks 6th request within window'</span>, () =&gt; {
+  <span class="comment">// This test FAILS first — that's correct (RED)</span>
+  const limiter = new RateLimiter(5, 60);
+  <span class="key">for</span> (let i = 0; i &lt; 5; i++) limiter.increment(<span class="str">'ip'</span>);
+  expect(limiter.isLimited(<span class="str">'ip'</span>)).toBe(<span class="key">true</span>);
+});
+
+<span class="comment"># 2. Watch it fail — confirms test is real (RED ✓)</span>
+<span class="cmd">npm test</span>  <span class="comment">→ FAIL (expected!)</span>
+
+<span class="comment"># 3. Write minimal code to pass (GREEN)</span>
+<span class="comment"># 4. Refactor if needed</span>
+<span class="comment"># 5. Commit</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h4>Subagent-Driven Development — Two-Stage Review</h4>
+            <p>Tasks are dispatched to fresh subagents. After implementation, each task undergoes a two-stage review: first for spec compliance (does it do what was planned?), then for code quality (is it well-written?). Critical issues block progress.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h4>Finishing a Branch — Merge/PR Decision Workflow</h4>
+            <p>When all tasks complete, the finishing skill verifies tests pass end-to-end, then presents options: merge to main, create PR, keep branch for more work, or discard. Cleans up the worktree.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS BREAKDOWN -->
+    <div class="section">
+      <h2>Key Skills Deep Dive</h2>
+
+      <div class="table-wrap">
+        <table class="cmd-table">
+          <thead><tr><th>Skill</th><th>When It Activates</th><th>What It Enforces</th></tr></thead>
+          <tbody>
+            <tr><td>brainstorming</td><td>Before writing any code for new features</td><td>Socratic design validation, saved design docs</td></tr>
+            <tr><td>test-driven-development</td><td>During any implementation</td><td>RED-GREEN-REFACTOR, deletes pre-test code</td></tr>
+            <tr><td>systematic-debugging</td><td>When a bug is encountered</td><td>4-phase root cause analysis, not guessing</td></tr>
+            <tr><td>verification-before-completion</td><td>Before marking a task done</td><td>Evidence-based completion, not claimed success</td></tr>
+            <tr><td>writing-plans</td><td>After design is approved</td><td>Atomic tasks with exact files and verify steps</td></tr>
+            <tr><td>subagent-driven-development</td><td>During plan execution</td><td>Fresh subagent per task, 2-stage review</td></tr>
+            <tr><td>using-git-worktrees</td><td>After design approval</td><td>Isolated branch, clean test baseline</td></tr>
+            <tr><td>requesting-code-review</td><td>Between major tasks</td><td>Pre-review checklist, severity-based reporting</td></tr>
+            <tr><td>finishing-a-development-branch</td><td>When all tasks complete</td><td>Final test verification, merge/PR options</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USE CASES -->
+    <div class="section">
+      <h2>Real Use Cases &amp; Examples</h2>
+      <div class="use-cases">
+        <div class="uc-card">
+          <div class="uc-icon">🔬</div>
+          <h4>Test-First Feature Development</h4>
+          <p>Just say "build a user authentication system." Superpowers brainstorms the design, creates a worktree, writes failing tests first, implements to pass, reviews the code, then presents merge options. Full TDD with zero ceremony from you.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🐛</div>
+          <h4>Debugging a Nasty Bug</h4>
+          <p>Describe the bug. The systematic-debugging skill activates: Phase 1 — reproduce, Phase 2 — isolate, Phase 3 — root cause, Phase 4 — fix + prevent. It won't claim it's fixed without running the exact reproduction steps.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">⚡</div>
+          <h4>2-Hour Autonomous Run</h4>
+          <p>Superpowers is designed so Claude can run autonomously for 2 hours without deviating from the approved plan. The subagent-driven-development skill dispatches fresh agents per task, each with a clean context window.</p>
+        </div>
+        <div class="uc-card">
+          <div class="uc-icon">🛠️</div>
+          <h4>Creating Custom Skills</h4>
+          <p>Use the writing-skills skill to add your own domain-specific skills. It follows a best-practices template (with built-in testing methodology) and integrates with the auto-activation system.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVANCED TIPS -->
+    <div class="section">
+      <h2>Advanced Superpowers Tips</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Trust the Brainstorming Phase</h4>
+            <p>Don't skip the design questions to "get to code faster." The 10 minutes you spend in brainstorming saves hours of rework. The more specific your answers, the more the implementation plan matches your vision.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Write Custom Skills for Your Stack</h4>
+            <p>Use the <code>writing-skills</code> skill to create project-specific skills — e.g., "when working on React components, always use our design system tokens from tokens.ts." These activate automatically just like built-in skills.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Combine with GSD for Maximum Reliability</h4>
+            <p>Run Superpowers on top of GSD. GSD manages context and wave execution at the macro level. Superpowers adds TDD, code review, and debugging methodology at the micro level. The skills don't conflict — they complement each other perfectly.</p>
+            <div class="pre-label"><div class="dot" style="background:var(--sp)"></div> Combined stack</div>
+            <pre><span class="comment"># Install both</span>
+<span class="cmd">npx get-shit-done-cc --claude --global</span>     <span class="comment"># GSD</span>
+<span class="cmd">/plugin install superpowers@claude-plugins-official</span>  <span class="comment"># Superpowers</span>
+
+<span class="comment"># GSD handles: planning, context, wave execution, milestones</span>
+<span class="comment"># Superpowers handles: TDD within each plan, code review, debugging</span>
+<span class="comment"># Result: structured development + quality methodology, no gaps</span></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💡</div>
+          <div class="step-body">
+            <h4>Let It Run — Don't Interrupt</h4>
+            <p>Superpowers is designed for autonomous multi-hour runs. Intervene only at natural checkpoints: design approval, plan review, and the merge/PR decision. Mid-task interruptions break the skill's state machine.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    <a href="https://github.com/obra/superpowers" target="_blank">GitHub</a> ·
+    <a href="https://claude.com/plugins/superpowers" target="_blank">Claude Plugin Marketplace</a> ·
+    Built by Jesse Vincent &amp; Prime Radiant · MIT License
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  NAVIGATION JS                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script>
+  const tabs = document.querySelectorAll('.nav-tab');
+  const pages = document.querySelectorAll('.page');
+
+  function showPage(pageId) {
+    tabs.forEach(t => t.classList.remove('active'));
+    pages.forEach(p => p.classList.remove('active'));
+    document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+    document.getElementById(`page-${pageId}`).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => showPage(tab.dataset.page));
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    const order = ['compare', 'bmad', 'gsd', 'superpowers'];
+    const current = document.querySelector('.nav-tab.active').dataset.page;
+    const idx = order.indexOf(current);
+    if (e.key === 'ArrowRight' && idx < order.length - 1) showPage(order[idx + 1]);
+    if (e.key === 'ArrowLeft' && idx > 0) showPage(order[idx - 1]);
+  });
+</script>
+</body>
+</html>
